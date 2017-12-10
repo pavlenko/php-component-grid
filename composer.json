@@ -1,0 +1,39 @@
+{
+  "config": {
+    "sort-packages": true
+  },
+  "name": "pe/component-grid",
+  "description": "Component allows handle display all kind of data lists",
+  "keywords": ["cmf", "grid"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Pavlenko Eugeniy",
+      "email": "pavlenko.obs@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "symfony/options-resolver": "^3.3"
+  },
+  "require-dev": {
+    "fsi/datagrid": "^1.2",
+    "phpunit/phpunit": "~5.0"
+  },
+  "suggest": {},
+  "autoload": {
+    "psr-4": {
+      "PE\\Component\\Grid\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PETest\\Component\\Grid\\": "tests/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  }
+}

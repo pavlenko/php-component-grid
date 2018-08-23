@@ -2,10 +2,9 @@
 
 namespace PE\Component\Grid;
 
+use PE\Component\Grid\ColumnType\ColumnTypeInterface;
 use PE\Component\Grid\DataMapper\DataMapperInterface;
-use PE\Component\Grid\DataSource\DataSourceInterface;
 use PE\Component\Grid\Exception\ExceptionInterface;
-use PE\Component\Grid\RequestHandler\RequestHandlerInterface;
 
 interface GridBuilderInterface
 {
@@ -51,24 +50,14 @@ interface GridBuilderInterface
     public function all();
 
     /**
-     * @return RequestHandlerInterface
+     * @return array|\Traversable
      */
-    public function getRequestHandler();
+    public function getData();
 
     /**
-     * @param RequestHandlerInterface $requestHandler
+     * @param array|\Traversable $data
      */
-    public function setRequestHandler(RequestHandlerInterface $requestHandler);
-
-    /**
-     * @return DataSourceInterface
-     */
-    public function getDataSource();
-
-    /**
-     * @param DataSourceInterface $dataSource
-     */
-    public function setDataSource(DataSourceInterface $dataSource);
+    public function setData($data);
 
     /**
      * @return DataMapperInterface

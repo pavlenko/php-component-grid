@@ -3,7 +3,8 @@
 namespace PE\Component\Grid;
 
 use PE\Component\Grid\Exception\InvalidArgumentException;
-use PE\Component\Grid\Iterator\MapIterator;
+use PE\Component\Grid\GridType\GridTypeInterface;
+use PE\Component\Grid\GridTypeExtension\GridTypeExtensionInterface;
 use PE\Component\Grid\View\GridView;
 use PE\Component\Grid\View\RowView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -68,6 +69,22 @@ class ResolvedGridType implements ResolvedGridTypeInterface
     /**
      * @inheritDoc
      */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBlockPrefix()
+    {
+        return $this->innerType->getBlockPrefix();
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function createBuilder(RegistryInterface $registry, $name, array $options = [])
     {
         return new GridBuilder($registry, $name, $this, $this->getOptionsResolver()->resolve($options));
@@ -94,31 +111,7 @@ class ResolvedGridType implements ResolvedGridTypeInterface
      */
     public function createGridView(GridInterface $grid)
     {
-        $view = new GridView($grid->getName(), $this->getInnerType()->getName());
-
-        $view->setHeaders(array_map(function(ColumnInterface $column){
-            $type    = $column->getType();
-            $options = $column->getOptions();
-
-            $type->buildHeaderView($view = $type->createHeaderView($column), $column, $options);
-
-            return $view;
-        }, $grid->getColumns()));
-
-        $view->setRows(new MapIterator($grid->getDataSource(), function($row) use ($grid) {
-            return new RowView(array_map(function(ColumnInterface $column) use ($row) {
-                $type    = $column->getType();
-                $options = $column->getOptions();
-
-                $type->buildCellView($view = $type->createCellView($column), $column, $options);
-
-                $view->setValue($column->getDataMapper()->getValue($row, $column->getName()));
-
-                return $view;
-            }, $grid->getColumns()));
-        }));
-
-        return $view;
+        return new GridView($grid->getName());
     }
 
     /**
@@ -134,6 +127,30 @@ class ResolvedGridType implements ResolvedGridTypeInterface
 
         foreach ($this->typeExtensions as $extension) {
             $extension->buildGridView($view, $grid, $options);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createRowView(GridView $grid, $index)
+    {
+        return new RowView($grid, $index);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function buildRowView(RowView $view, GridInterface $grid, array $options)
+    {
+        if (null !== $this->parent) {
+            $this->parent->buildRowView($view, $grid, $options);
+        }
+
+        $this->innerType->buildRowView($view, $grid, $options);
+
+        foreach ($this->typeExtensions as $extension) {
+            $extension->buildRowView($view, $grid, $options);
         }
     }
 

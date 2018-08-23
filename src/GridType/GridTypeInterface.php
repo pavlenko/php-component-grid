@@ -1,8 +1,11 @@
 <?php
 
-namespace PE\Component\Grid;
+namespace PE\Component\Grid\GridType;
 
+use PE\Component\Grid\GridBuilderInterface;
+use PE\Component\Grid\GridInterface;
 use PE\Component\Grid\View\GridView;
+use PE\Component\Grid\View\RowView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 interface GridTypeInterface
@@ -21,6 +24,13 @@ interface GridTypeInterface
     public function buildGridView(GridView $view, GridInterface $grid, array $options);
 
     /**
+     * @param RowView       $view
+     * @param GridInterface $grid
+     * @param array         $options
+     */
+    public function buildRowView(RowView $view, GridInterface $grid, array $options);
+
+    /**
      * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver);
@@ -28,7 +38,7 @@ interface GridTypeInterface
     /**
      * @return string
      */
-    public function getName();
+    public function getBlockPrefix();
 
     /**
      * @return string|null

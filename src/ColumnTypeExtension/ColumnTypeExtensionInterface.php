@@ -1,26 +1,28 @@
 <?php
 
-namespace PE\Component\Grid;
+namespace PE\Component\Grid\ColumnTypeExtension;
 
+use PE\Component\Grid\ColumnInterface;
 use PE\Component\Grid\View\CellView;
-use PE\Component\Grid\View\HeaderView;
+use PE\Component\Grid\View\ColumnView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-interface ColumnTypeInterface
+interface ColumnTypeExtensionInterface
 {
     /**
-     * @param HeaderView      $view
+     * @param ColumnView      $view
      * @param ColumnInterface $column
      * @param array           $options
      */
-    public function buildHeaderView(HeaderView $view, ColumnInterface $column, array $options);
+    public function buildColumnView(ColumnView $view, ColumnInterface $column, array $options);
 
     /**
      * @param CellView        $view
      * @param ColumnInterface $column
+     * @param mixed           $row
      * @param array           $options
      */
-    public function buildCellView(CellView $view, ColumnInterface $column, array $options);
+    public function buildCellView(CellView $view, ColumnInterface $column, $row, array $options);
 
     /**
      * @param OptionsResolver $resolver
@@ -30,10 +32,5 @@ interface ColumnTypeInterface
     /**
      * @return string
      */
-    public function getName();
-
-    /**
-     * @return string|null
-     */
-    public function getParent();
+    public function getExtendedType();
 }

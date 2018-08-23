@@ -2,10 +2,7 @@
 
 namespace PE\Component\Grid;
 
-use PE\Component\Grid\DataSource\ArrayDataSource;
-use PE\Component\Grid\DataSource\DataSourceInterface;
-use PE\Component\Grid\RequestHandler\NativeRequestHandler;
-use PE\Component\Grid\RequestHandler\RequestHandlerInterface;
+use PE\Component\Grid\Exception\UnexpectedValueException;
 
 class Grid implements GridInterface
 {
@@ -30,14 +27,9 @@ class Grid implements GridInterface
     protected $columns = [];
 
     /**
-     * @var RequestHandlerInterface
+     * @var array|\Traversable
      */
-    protected $requestHandler;
-
-    /**
-     * @var DataSourceInterface
-     */
-    protected $dataSource;
+    protected $data = [];
 
     /**
      * @param string                    $name
@@ -92,49 +84,21 @@ class Grid implements GridInterface
     /**
      * @inheritdoc
      */
-    public function getDataSource()
+    public function getData()
     {
-        if ($this->dataSource === null) {
-            $this->dataSource = new ArrayDataSource([]);
+        return $this->data;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setData($data)
+    {
+        if (!is_array($data) && !($data instanceof \Traversable)) {
+            throw new UnexpectedValueException($data, 'array or \Traversable');
         }
 
-        return $this->dataSource;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setDataSource(DataSourceInterface $dataSource)
-    {
-        $this->dataSource = $dataSource;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getRequestHandler()
-    {
-        if ($this->requestHandler === null) {
-            $this->requestHandler = new NativeRequestHandler();
-        }
-
-        return $this->requestHandler;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setRequestHandler(RequestHandlerInterface $requestHandler)
-    {
-        $this->requestHandler = $requestHandler;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function handleRequest($request = null)
-    {
-        $this->getRequestHandler()->handleRequest($this, $request);
+        $this->data = $data;
     }
 
     /**
@@ -142,11 +106,46 @@ class Grid implements GridInterface
      */
     public function createView()
     {
-        $type    = $this->getType();
-        $options = $this->getOptions();
+        $gridType    = $this->getType();
+        $gridOptions = $this->getOptions();
+        $gridView    = $gridType->createGridView($this);
 
-        $type->buildGridView($view = $type->createGridView($this), $this, $options);
+        $gridType->buildGridView($gridView, $this, $gridOptions);
 
-        return $view;
+        foreach ($this->columns as $name => $column) {
+            $columnType    = $column->getType();
+            $columnOptions = $column->getOptions();
+            $columnView    = $columnType->createColumnView($gridView, $name);
+
+            $columnType->buildColumnView($columnView, $column, $columnOptions);
+
+            $gridView->columns[$name] = $columnView;
+        }
+
+        foreach ($this->data as $index => $row) {
+            $rowView = $gridType->createRowView($gridView, $index);
+
+            $gridType->buildRowView($rowView, $this, $gridOptions);//TODO pass row to build?
+
+            foreach ($gridView->columns as $name => $columnView) {
+                $column        = $this->columns[$name];
+                $columnType    = $column->getType();
+                $columnOptions = $column->getOptions();
+                $cellView      = $columnType->createCellView($gridView, $name);
+
+                if ($columnOptions['mapped']) {//TODO map value
+                    //$cellView->setValue($column->getDataMapper()->getValue($row, $column->getName()));
+                    $cellView->vars['value'] = $column->getDataMapper()->getValue($row, $column->getName());
+                }
+
+                $columnType->buildCellView($cellView, $column, $row, $columnOptions);
+
+                $rowView->cells[$name] = $cellView;
+            }
+
+            $gridView->rows[] = $rowView;
+        }
+
+        return $gridView;
     }
 }

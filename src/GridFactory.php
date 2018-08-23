@@ -2,10 +2,8 @@
 
 namespace PE\Component\Grid;
 
-use PE\Component\Grid\DataSource\ArrayDataSource;
-use PE\Component\Grid\DataSource\DataSourceInterface;
 use PE\Component\Grid\Exception\UnexpectedValueException;
-use PE\Component\Grid\GridType\BaseType;
+use PE\Component\Grid\GridType\BaseGridType;
 
 class GridFactory implements GridFactoryInterface
 {
@@ -27,7 +25,7 @@ class GridFactory implements GridFactoryInterface
     /**
      * @inheritDoc
      */
-    public function create($type = BaseType::class, $data = null, array $options = [])
+    public function create($type = BaseGridType::class, $data = null, array $options = [])
     {
         return $this->createNamed('grid', $type, $data, $options);
     }
@@ -35,7 +33,7 @@ class GridFactory implements GridFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createNamed($name, $type = BaseType::class, $data = null, array $options = [])
+    public function createNamed($name, $type = BaseGridType::class, $data = null, array $options = [])
     {
         return $this->createNamedBuilder($name, $type, $data, $options)->getGrid();
     }
@@ -43,7 +41,7 @@ class GridFactory implements GridFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createBuilder($type = BaseType::class, $data = null, array $options = [])
+    public function createBuilder($type = BaseGridType::class, $data = null, array $options = [])
     {
         return $this->createNamedBuilder('grid', $type, $data, $options);
     }
@@ -51,27 +49,17 @@ class GridFactory implements GridFactoryInterface
     /**
      * @inheritDoc
      */
-    public function createNamedBuilder($name, $type = BaseType::class, $data = null, array $options = [])
+    public function createNamedBuilder($name, $type = BaseGridType::class, $data = null, array $options = [])
     {
         if (!is_string($type)) {
             throw new UnexpectedValueException($type, 'string');
-        }
-
-        if ($data !== null) {
-            if (is_array($data)) {
-                $data = new ArrayDataSource($data);
-            }
-
-            if (!($data instanceof DataSourceInterface)) {
-                throw new UnexpectedValueException($type, 'null or array or instance of' . DataSourceInterface::class);
-            }
         }
 
         $type    = $this->registry->getGridType($type);
         $builder = $type->createBuilder($this->registry, $name, $options);
 
         if ($data !== null) {
-            $builder->setDataSource($data);
+            $builder->setData($data);
         }
 
         $type->buildGrid($builder, $builder->getOptions());

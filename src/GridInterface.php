@@ -2,9 +2,6 @@
 
 namespace PE\Component\Grid;
 
-use PE\Component\Grid\DataSource\DataSourceInterface;
-use PE\Component\Grid\Exception\ExceptionInterface;
-use PE\Component\Grid\RequestHandler\RequestHandlerInterface;
 use PE\Component\Grid\View\GridView;
 
 interface GridInterface
@@ -30,31 +27,14 @@ interface GridInterface
     public function getColumns();
 
     /**
-     * @return DataSourceInterface
+     * @return array|\Traversable
      */
-    public function getDataSource();
+    public function getData();
 
     /**
-     * @param DataSourceInterface $dataSource
+     * @param array|\Traversable $data
      */
-    public function setDataSource(DataSourceInterface $dataSource);
-
-    /**
-     * @return RequestHandlerInterface
-     */
-    public function getRequestHandler();
-
-    /**
-     * @param RequestHandlerInterface $requestHandler
-     */
-    public function setRequestHandler(RequestHandlerInterface $requestHandler);
-
-    /**
-     * @param mixed $request
-     *
-     * @throws ExceptionInterface
-     */
-    public function handleRequest($request = null);
+    public function setData($data);
 
     /**
      * @return GridView

@@ -1,8 +1,10 @@
 <?php
 
-namespace PE\Component\Grid;
+namespace PE\Component\Grid\GridExtension;
 
 use PE\Component\Grid\Exception\InvalidArgumentException;
+use PE\Component\Grid\GridType\GridTypeInterface;
+use PE\Component\Grid\GridTypeExtension\GridTypeExtensionInterface;
 
 interface GridExtensionInterface
 {

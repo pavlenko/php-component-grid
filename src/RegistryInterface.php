@@ -2,7 +2,9 @@
 
 namespace PE\Component\Grid;
 
+use PE\Component\Grid\ColumnExtension\ColumnExtensionInterface;
 use PE\Component\Grid\Exception\InvalidArgumentException;
+use PE\Component\Grid\GridExtension\GridExtensionInterface;
 
 interface RegistryInterface
 {

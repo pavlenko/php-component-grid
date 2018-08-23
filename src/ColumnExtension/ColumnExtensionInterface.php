@@ -1,7 +1,9 @@
 <?php
 
-namespace PE\Component\Grid;
+namespace PE\Component\Grid\ColumnExtension;
 
+use PE\Component\Grid\ColumnType\ColumnTypeInterface;
+use PE\Component\Grid\ColumnTypeExtension\ColumnTypeExtensionInterface;
 use PE\Component\Grid\Exception\InvalidArgumentException;
 
 interface ColumnExtensionInterface

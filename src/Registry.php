@@ -2,8 +2,12 @@
 
 namespace PE\Component\Grid;
 
+use PE\Component\Grid\ColumnExtension\ColumnExtensionInterface;
+use PE\Component\Grid\ColumnType\ColumnTypeInterface;
 use PE\Component\Grid\Exception\ExceptionInterface;
 use PE\Component\Grid\Exception\InvalidArgumentException;
+use PE\Component\Grid\GridExtension\GridExtensionInterface;
+use PE\Component\Grid\GridType\GridTypeInterface;
 
 class Registry implements RegistryInterface
 {

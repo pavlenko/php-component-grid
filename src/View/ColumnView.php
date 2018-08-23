@@ -2,10 +2,10 @@
 
 namespace PE\Component\Grid\View;
 
-class CellView extends BaseView
+class ColumnView extends BaseView
 {
     /**
-     * @var GridView
+     * @var string
      */
     public $grid;
 

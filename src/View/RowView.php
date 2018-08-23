@@ -2,26 +2,30 @@
 
 namespace PE\Component\Grid\View;
 
-class RowView
+class RowView extends BaseView
 {
+    /**
+     * @var GridView
+     */
+    public $grid;
+
+    /**
+     * @var int|string
+     */
+    public $index;
+
     /**
      * @var CellView[]
      */
-    private $cells = [];
+    public $cells = [];
 
     /**
-     * @param CellView[] $cells
+     * @param GridView   $grid
+     * @param int|string $index
      */
-    public function __construct(array $cells)
+    public function __construct(GridView $grid, $index)
     {
-        $this->cells = $cells;
-    }
-
-    /**
-     * @return CellView[]
-     */
-    public function getCells()
-    {
-        return $this->cells;
+        $this->grid  = $grid;
+        $this->index = $index;
     }
 }

@@ -2,9 +2,12 @@
 
 namespace PE\Component\Grid;
 
+use PE\Component\Grid\ColumnType\ColumnTypeInterface;
+use PE\Component\Grid\ColumnTypeExtension\ColumnTypeExtensionInterface;
 use PE\Component\Grid\Exception\InvalidArgumentException;
 use PE\Component\Grid\View\CellView;
-use PE\Component\Grid\View\HeaderView;
+use PE\Component\Grid\View\ColumnView;
+use PE\Component\Grid\View\GridView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ResolvedColumnType implements ResolvedColumnTypeInterface
@@ -73,50 +76,66 @@ class ResolvedColumnType implements ResolvedColumnTypeInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function createHeaderView(ColumnInterface $column)
+    public function getParent()
     {
-        return new HeaderView($column->getName(), $this->getInnerType()->getName());
+        return $this->parent;
     }
 
     /**
      * @inheritDoc
      */
-    public function buildHeaderView(HeaderView $view, ColumnInterface $column, array $options)
+    public function getBlockPrefix()
+    {
+        return $this->innerType->getBlockPrefix();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createColumnView(GridView $grid, $name)
+    {
+        return new ColumnView($grid, $name);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function buildColumnView(ColumnView $view, ColumnInterface $column, array $options)
     {
         if (null !== $this->parent) {
-            $this->parent->buildHeaderView($view, $column, $options);
+            $this->parent->buildColumnView($view, $column, $options);
         }
 
-        $this->innerType->buildHeaderView($view, $column, $options);
+        $this->innerType->buildColumnView($view, $column, $options);
 
         foreach ($this->typeExtensions as $extension) {
-            $extension->buildHeaderView($view, $column, $options);
+            $extension->buildColumnView($view, $column, $options);
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function createCellView(ColumnInterface $column)
+    public function createCellView(GridView $grid, $name)
     {
-        return new CellView($column->getName(), $this->getInnerType()->getName());
+        return new CellView($grid, $name);
     }
 
     /**
      * @inheritDoc
      */
-    public function buildCellView(CellView $view, ColumnInterface $column, array $options)
+    public function buildCellView(CellView $view, ColumnInterface $column, $row, array $options)
     {
         if (null !== $this->parent) {
-            $this->parent->buildCellView($view, $column, $options);
+            $this->parent->buildCellView($view, $column, $row, $options);
         }
 
-        $this->innerType->buildCellView($view, $column, $options);
+        $this->innerType->buildCellView($view, $column, $row, $options);
 
         foreach ($this->typeExtensions as $extension) {
-            $extension->buildCellView($view, $column, $options);
+            $extension->buildCellView($view, $column, $row, $options);
         }
     }
 

@@ -3,11 +3,9 @@
 namespace PE\Component\Grid;
 
 use PE\Component\Grid\DataMapper\DataMapperInterface;
-use PE\Component\Grid\DataSource\DataSourceInterface;
 use PE\Component\Grid\Exception\ExceptionInterface;
 use PE\Component\Grid\Exception\InvalidArgumentException;
 use PE\Component\Grid\Exception\UnexpectedValueException;
-use PE\Component\Grid\RequestHandler\RequestHandlerInterface;
 
 class GridBuilder implements GridBuilderInterface
 {
@@ -42,19 +40,14 @@ class GridBuilder implements GridBuilderInterface
     protected $columns = [];
 
     /**
-     * @var RequestHandlerInterface
-     */
-    protected $requestHandler;
-
-    /**
      * @var DataMapperInterface
      */
     protected $dataMapper;
 
     /**
-     * @var DataSourceInterface
+     * @var array|\Traversable
      */
-    protected $dataSource;
+    protected $data;
 
     /**
      * @param RegistryInterface         $registry
@@ -154,32 +147,12 @@ class GridBuilder implements GridBuilderInterface
     /**
      * @inheritDoc
      */
-    public function getRequestHandler()
-    {
-        return $this->requestHandler;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setRequestHandler(RequestHandlerInterface $requestHandler)
-    {
-        $this->requestHandler = $requestHandler;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getGrid()
     {
         $grid = new Grid($this->name, $this->type, $this->options, $this->all());
 
-        if (null !== $this->requestHandler) {
-            $grid->setRequestHandler($this->requestHandler);
-        }
-
-        if (null !== $this->dataSource) {
-            $grid->setDataSource($this->dataSource);
+        if (null !== $this->data) {
+            $grid->setData($this->data);
         }
 
         return $grid;
@@ -204,17 +177,17 @@ class GridBuilder implements GridBuilderInterface
     /**
      * @inheritdoc
      */
-    public function getDataSource()
+    public function getData()
     {
-        return $this->dataSource;
+        return $this->data;
     }
 
     /**
      * @inheritdoc
      */
-    public function setDataSource(DataSourceInterface $dataSource)
+    public function setData($data)
     {
-        $this->dataSource = $dataSource;
+        $this->data = $data;
     }
 
     /**
